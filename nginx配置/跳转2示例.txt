@@ -1,0 +1,14 @@
+server {
+       listen 80;
+       server_name 302.test.cn;
+       proxy_intercept_errors on;
+       recursive_error_pages on;
+       location ~* .*\.jpg {
+           proxy_pass http://www.baidu.com/;
+           error_page 302 = @error_page_302;   
+       }
+       location @error_page_302 {
+       rewrite_by_lua '
+        http://www.baidu.com/';
+       }
+}

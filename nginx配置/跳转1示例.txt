@@ -1,0 +1,17 @@
+server {
+       listen 80;
+       server_name wk.test.cn;
+       root /data/cdntest/sem.landu2.cn/;
+       location = /{     #访问首页返回403
+         return  403;
+         #return 302 http://www.baidu.com/; #该策略302跳转
+         #proxy_pass https://www.liveme.com/; #该策略展示liveme首页内容但浏览器域名不变
+       }
+       location ~* .*\.jpg$ {
+          rewrite ".*" http://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png; 
+       }
+       location /{       #访问其他链接正常响应，跳转到sem.duba.net
+       proxy_pass http://sem.duba.net;
+       }
+       error_page 404 /404.html;
+}
