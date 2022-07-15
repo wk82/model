@@ -1,0 +1,3542 @@
+{
+  "Description": "(SO8001) - Data Transfer Hub with aws-solutions-constructs: This template deploys an one-stop toolset for transferring data from different sources into AWS. Template version v2.1.3",
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Metadata": {
+    "AWS::CloudFormation::Interface": {
+      "ParameterGroups": [
+        {
+          "Label": {
+            "default": "OIDC Settings"
+          },
+          "Parameters": [
+            "OidcProvider",
+            "OidcClientId",
+            "OidcCustomerDomain"
+          ]
+        }
+      ]
+    }
+  },
+  "Parameters": {
+    "OidcProvider": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Open Id Connector Provider Issuer"
+    },
+    "OidcClientId": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Open Id Connector Client Id"
+    },
+    "OidcCustomerDomain": {
+      "Type": "String",
+      "Default": "",
+      "Description": "Customer Domain for Data Transfer Hub"
+    }
+  },
+  "Mappings": {
+    "Send": {
+      "AnonymousUsage": {
+        "Data": "Yes"
+      }
+    }
+  },
+  "Resources": {
+    "TaskClusterTaskVPCE5385B4D": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DataTransferHub/TaskCluster/TaskVPC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/Resource"
+      }
+    },
+    "TaskClusterTaskVPCpublicSubnet1SubnetB3F44AEF": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/24",
+        "VpcId": {
+          "Ref": "TaskClusterTaskVPCE5385B4D"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "DataTransferHub/TaskCluster/TaskVPC/publicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/publicSubnet1/Subnet",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W33",
+              "reason": "Default Setting for VPC subnets"
+            }
+          ]
+        }
+      }
+    },
+    "TaskClusterTaskVPCpublicSubnet1RouteTableE769348F": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "TaskClusterTaskVPCE5385B4D"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DataTransferHub/TaskCluster/TaskVPC/publicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/publicSubnet1/RouteTable"
+      }
+    },
+    "TaskClusterTaskVPCpublicSubnet1RouteTableAssociation154E832E": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "TaskClusterTaskVPCpublicSubnet1RouteTableE769348F"
+        },
+        "SubnetId": {
+          "Ref": "TaskClusterTaskVPCpublicSubnet1SubnetB3F44AEF"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/publicSubnet1/RouteTableAssociation"
+      }
+    },
+    "TaskClusterTaskVPCpublicSubnet1DefaultRoute7CDC1040": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "TaskClusterTaskVPCpublicSubnet1RouteTableE769348F"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "TaskClusterTaskVPCIGW76CA6712"
+        }
+      },
+      "DependsOn": [
+        "TaskClusterTaskVPCVPCGWB2B682AC"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/publicSubnet1/DefaultRoute"
+      }
+    },
+    "TaskClusterTaskVPCpublicSubnet2Subnet9FB6145A": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.1.0/24",
+        "VpcId": {
+          "Ref": "TaskClusterTaskVPCE5385B4D"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "DataTransferHub/TaskCluster/TaskVPC/publicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/publicSubnet2/Subnet",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W33",
+              "reason": "Default Setting for VPC subnets"
+            }
+          ]
+        }
+      }
+    },
+    "TaskClusterTaskVPCpublicSubnet2RouteTableDD4DBDC9": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "TaskClusterTaskVPCE5385B4D"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DataTransferHub/TaskCluster/TaskVPC/publicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/publicSubnet2/RouteTable"
+      }
+    },
+    "TaskClusterTaskVPCpublicSubnet2RouteTableAssociation4F8430D5": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "TaskClusterTaskVPCpublicSubnet2RouteTableDD4DBDC9"
+        },
+        "SubnetId": {
+          "Ref": "TaskClusterTaskVPCpublicSubnet2Subnet9FB6145A"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/publicSubnet2/RouteTableAssociation"
+      }
+    },
+    "TaskClusterTaskVPCpublicSubnet2DefaultRoute8FB45401": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "TaskClusterTaskVPCpublicSubnet2RouteTableDD4DBDC9"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "TaskClusterTaskVPCIGW76CA6712"
+        }
+      },
+      "DependsOn": [
+        "TaskClusterTaskVPCVPCGWB2B682AC"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/publicSubnet2/DefaultRoute"
+      }
+    },
+    "TaskClusterTaskVPCIGW76CA6712": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DataTransferHub/TaskCluster/TaskVPC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/IGW"
+      }
+    },
+    "TaskClusterTaskVPCVPCGWB2B682AC": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "TaskClusterTaskVPCE5385B4D"
+        },
+        "InternetGatewayId": {
+          "Ref": "TaskClusterTaskVPCIGW76CA6712"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/VPCGW"
+      }
+    },
+    "TaskClusterTaskVPCFlowLogCWIAMRole08EC65EE": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "vpc-flow-logs.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DataTransferHub/TaskCluster/TaskVPC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/FlowLogCW/IAMRole/Resource"
+      }
+    },
+    "TaskClusterTaskVPCFlowLogCWIAMRoleDefaultPolicyBC6FC631": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TaskClusterVPCLogGroupEF25F73B",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TaskClusterTaskVPCFlowLogCWIAMRole08EC65EE",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "TaskClusterTaskVPCFlowLogCWIAMRoleDefaultPolicyBC6FC631",
+        "Roles": [
+          {
+            "Ref": "TaskClusterTaskVPCFlowLogCWIAMRole08EC65EE"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/FlowLogCW/IAMRole/DefaultPolicy/Resource"
+      }
+    },
+    "TaskClusterTaskVPCFlowLogCWFlowLog3A8571BE": {
+      "Type": "AWS::EC2::FlowLog",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TaskClusterTaskVPCE5385B4D"
+        },
+        "ResourceType": "VPC",
+        "TrafficType": "REJECT",
+        "DeliverLogsPermissionArn": {
+          "Fn::GetAtt": [
+            "TaskClusterTaskVPCFlowLogCWIAMRole08EC65EE",
+            "Arn"
+          ]
+        },
+        "LogDestinationType": "cloud-watch-logs",
+        "LogGroupName": {
+          "Ref": "TaskClusterVPCLogGroupEF25F73B"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "DataTransferHub/TaskCluster/TaskVPC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/TaskVPC/FlowLogCW/FlowLog"
+      }
+    },
+    "TaskClusterVPCLogGroupEF25F73B": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 14
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/VPCLogGroup/Resource",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W84",
+              "reason": "log group is encrypted with the default master key"
+            }
+          ]
+        }
+      }
+    },
+    "TaskCluster": {
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "enabled"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/TaskCluster/DTHTaskCluster/Resource"
+      }
+    },
+    "APIAppSyncServiceLinkRoleFnServiceRoleB8E4BC8D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/AppSyncServiceLinkRoleFn/ServiceRole/Resource"
+      }
+    },
+    "APIAppSyncServiceLinkRoleFn2F2DA79D": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+          },
+          "S3Key": "data-transfer-hub/v2.1.3/e8ed56fb001005453a373fa67c6e22d90e914e787fd01b7a9a11c39997300f4c.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "APIAppSyncServiceLinkRoleFnServiceRoleB8E4BC8D",
+            "Arn"
+          ]
+        },
+        "Description": "Data Transfer Hub - Service Linked Role Create Handler",
+        "Handler": "crete_service_linked_role.lambda_handler",
+        "MemorySize": 128,
+        "Runtime": "python3.8",
+        "Timeout": 60
+      },
+      "DependsOn": [
+        "APIAppSyncServiceLinkRoleFnServiceRoleB8E4BC8D"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/AppSyncServiceLinkRoleFn/Resource",
+        "aws:asset:path": "asset.e8ed56fb001005453a373fa67c6e22d90e914e787fd01b7a9a11c39997300f4c",
+        "aws:asset:property": "Code"
+      }
+    },
+    "APIserviceLikedRolePolicyCCA80038": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "iam:GetRole",
+                "iam:CreateServiceLinkedRole"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "APIserviceLikedRolePolicyCCA80038",
+        "Roles": [
+          {
+            "Ref": "APIAppSyncServiceLinkRoleFnServiceRoleB8E4BC8D"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/serviceLikedRolePolicy/Resource",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W12",
+              "reason": "This policy needs to be able to have access to all resources"
+            }
+          ]
+        }
+      }
+    },
+    "APIappSyncServiceLinkRoleFnProviderframeworkonEventServiceRole6B217C32": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "DependsOn": [
+        "APIAppSyncServiceLinkRoleFn2F2DA79D",
+        "APIAppSyncServiceLinkRoleFnServiceRoleB8E4BC8D"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/appSyncServiceLinkRoleFnProvider/framework-onEvent/ServiceRole/Resource"
+      }
+    },
+    "APIappSyncServiceLinkRoleFnProviderframeworkonEventServiceRoleDefaultPolicy108B8472": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "APIAppSyncServiceLinkRoleFn2F2DA79D",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "APIappSyncServiceLinkRoleFnProviderframeworkonEventServiceRoleDefaultPolicy108B8472",
+        "Roles": [
+          {
+            "Ref": "APIappSyncServiceLinkRoleFnProviderframeworkonEventServiceRole6B217C32"
+          }
+        ]
+      },
+      "DependsOn": [
+        "APIAppSyncServiceLinkRoleFn2F2DA79D",
+        "APIAppSyncServiceLinkRoleFnServiceRoleB8E4BC8D"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/appSyncServiceLinkRoleFnProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "APIappSyncServiceLinkRoleFnProviderframeworkonEventC881B4E7": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+          },
+          "S3Key": "data-transfer-hub/v2.1.3/c691172cdeefa2c91b5a2907f9d81118e47597634943344795f1a844192dd49c.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "APIappSyncServiceLinkRoleFnProviderframeworkonEventServiceRole6B217C32",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (DataTransferHub/API/appSyncServiceLinkRoleFnProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "APIAppSyncServiceLinkRoleFn2F2DA79D",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs14.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "APIAppSyncServiceLinkRoleFn2F2DA79D",
+        "APIAppSyncServiceLinkRoleFnServiceRoleB8E4BC8D",
+        "APIappSyncServiceLinkRoleFnProviderframeworkonEventServiceRoleDefaultPolicy108B8472",
+        "APIappSyncServiceLinkRoleFnProviderframeworkonEventServiceRole6B217C32"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/appSyncServiceLinkRoleFnProvider/framework-onEvent/Resource",
+        "aws:asset:path": "asset.c691172cdeefa2c91b5a2907f9d81118e47597634943344795f1a844192dd49c",
+        "aws:asset:property": "Code"
+      }
+    },
+    "APIappSyncServiceLinkRoleFnTrigger535D3D40": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "APIappSyncServiceLinkRoleFnProviderframeworkonEventC881B4E7",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "APIappSyncServiceLinkRoleFnProviderframeworkonEventC881B4E7",
+        "APIappSyncServiceLinkRoleFnProviderframeworkonEventServiceRoleDefaultPolicy108B8472",
+        "APIappSyncServiceLinkRoleFnProviderframeworkonEventServiceRole6B217C32"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/appSyncServiceLinkRoleFnTrigger/Default"
+      }
+    },
+    "APITaskTable658DE9FE": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "stackId",
+            "AttributeType": "S"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "byStackId",
+            "KeySchema": [
+              {
+                "AttributeName": "stackId",
+                "KeyType": "HASH"
+              }
+            ],
+            "Projection": {
+              "NonKeyAttributes": [
+                "id",
+                "status",
+                "stackStatus"
+              ],
+              "ProjectionType": "INCLUDE"
+            }
+          }
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "SSESpecification": {
+          "SSEEnabled": false
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/TaskTable/Resource",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W74",
+              "reason": "This table is set to use DEFAULT encryption, the key is owned by DDB."
+            }
+          ]
+        }
+      }
+    },
+    "APILayerED87B2AA": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": {
+            "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+          },
+          "S3Key": "data-transfer-hub/v2.1.3/308721543f04cdc59398f2776ffad7c43dd922f0b5667247e1a6cfd642cc96ba.zip"
+        },
+        "CompatibleRuntimes": [
+          "nodejs14.x"
+        ],
+        "Description": "Data Transfer Hub - Lambda Layer"
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/Layer/Resource",
+        "aws:asset:path": "asset.308721543f04cdc59398f2776ffad7c43dd922f0b5667247e1a6cfd642cc96ba",
+        "aws:asset:property": "Content"
+      }
+    },
+    "APICfnWorkflowCreateTaskCfnFnServiceRole3938A461": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/CfnWorkflow/CreateTaskCfnFn/ServiceRole/Resource"
+      }
+    },
+    "APICfnWorkflowCreateTaskCfnFnACF26E17": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+          },
+          "S3Key": "data-transfer-hub/v2.1.3/9396cca309f43abd072db00ed3edd4f0df5b7988e939c35ced9bbfa19e02a595.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "APICfnWorkflowCreateTaskCfnFnServiceRole3938A461",
+            "Arn"
+          ]
+        },
+        "Description": "Data Transfer Hub - Create Task",
+        "Environment": {
+          "Variables": {
+            "TASK_TABLE": {
+              "Ref": "APITaskTable658DE9FE"
+            }
+          }
+        },
+        "Handler": "cdk/cfn-task.createTaskCfn",
+        "Layers": [
+          {
+            "Ref": "APILayerED87B2AA"
+          }
+        ],
+        "MemorySize": 512,
+        "Runtime": "nodejs14.x",
+        "Timeout": 60
+      },
+      "DependsOn": [
+        "APICfnWorkflowCreateTaskCfnFnServiceRole3938A461"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/CfnWorkflow/CreateTaskCfnFn/Resource",
+        "aws:asset:path": "asset.9396cca309f43abd072db00ed3edd4f0df5b7988e939c35ced9bbfa19e02a595",
+        "aws:asset:property": "Code",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W58",
+              "reason": "Lambda function already has permission to write CloudWatch Logs"
+            }
+          ]
+        }
+      }
+    },
+    "APICfnWorkflowStopTaskCfnFnServiceRoleCB7981E0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/CfnWorkflow/StopTaskCfnFn/ServiceRole/Resource"
+      }
+    },
+    "APICfnWorkflowStopTaskCfnFn512164BE": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+          },
+          "S3Key": "data-transfer-hub/v2.1.3/9396cca309f43abd072db00ed3edd4f0df5b7988e939c35ced9bbfa19e02a595.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "APICfnWorkflowStopTaskCfnFnServiceRoleCB7981E0",
+            "Arn"
+          ]
+        },
+        "Description": "Data Transfer Hub - Stop Task",
+        "Environment": {
+          "Variables": {
+            "TASK_TABLE": {
+              "Ref": "APITaskTable658DE9FE"
+            }
+          }
+        },
+        "Handler": "cdk/cfn-task.stopTaskCfn",
+        "Layers": [
+          {
+            "Ref": "APILayerED87B2AA"
+          }
+        ],
+        "MemorySize": 512,
+        "Runtime": "nodejs14.x",
+        "Timeout": 60
+      },
+      "DependsOn": [
+        "APICfnWorkflowStopTaskCfnFnServiceRoleCB7981E0"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/CfnWorkflow/StopTaskCfnFn/Resource",
+        "aws:asset:path": "asset.9396cca309f43abd072db00ed3edd4f0df5b7988e939c35ced9bbfa19e02a595",
+        "aws:asset:property": "Code",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W58",
+              "reason": "Lambda function already has permission to write CloudWatch Logs"
+            }
+          ]
+        }
+      }
+    },
+    "APICfnWorkflowTaskFnPolicy9138F2E2": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "states:CreateStateMachine",
+                "states:DeleteStateMachine",
+                "states:DescribeStateMachine",
+                "states:TagResource"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":states:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":activity:DTH*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":states:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":stateMachine:DTH*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "autoscaling:CreateLaunchConfiguration",
+                "autoscaling:CreateAutoScalingGroup",
+                "autoscaling:DeleteAutoScalingGroup",
+                "autoscaling:DeleteLaunchConfiguration",
+                "autoscaling:UpdateAutoScalingGroup",
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeAutoScalingInstances",
+                "autoscaling:DescribeLaunchConfigurations",
+                "autoscaling:EnableMetricsCollection",
+                "autoscaling:DescribeScalingActivities",
+                "autoscaling:PutScalingPolicy",
+                "autoscaling:DeletePolicy"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "SNS:CreateTopic",
+                "SNS:GetTopicAttributes",
+                "SNS:DeleteTopic",
+                "SNS:Subscribe",
+                "SNS:Unsubscribe"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":sns:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":DTH*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ssm:GetParameters",
+                "ssm:PutParameter",
+                "ssm:AddTagsToResource",
+                "ssm:DeleteParameter"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "events:PutRule",
+                "events:RemoveTargets",
+                "events:DescribeRule",
+                "events:PutTargets",
+                "events:DeleteRule"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":events:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":rule/DTH*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "cloudformation:Create*",
+                "cloudformation:Update*",
+                "cloudformation:Delete*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "s3:PutBucketNotification",
+                "s3:GetBucketNotification",
+                "s3:GetObject"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "dynamodb:CreateTable",
+                "dynamodb:DescribeTable",
+                "dynamodb:DeleteTable",
+                "dynamodb:UpdateItem",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:UpdateContinuousBackups"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":dynamodb:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/DTH*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "APITaskTable658DE9FE",
+                    "Arn"
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:CreateQueue",
+                "sqs:GetQueueAttributes",
+                "sqs:SetQueueAttributes",
+                "sqs:DeleteQueue"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":sqs:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":DTH*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ec2:createTags",
+                "ec2:DescribeImages",
+                "ec2:DescribeVpcs",
+                "ec2:DescribeInstances",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeVolumes",
+                "ec2:DescribeTags",
+                "ec2:CreateSecurityGroup",
+                "ec2:DeleteSecurityGroup",
+                "ec2:DescribeSecurityGroups",
+                "ec2:RevokeSecurityGroupEgress",
+                "ec2:AuthorizeSecurityGroupEgress"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "ecs:RunTask",
+                "ecs:ListTasks",
+                "ecs:RegisterTaskDefinition",
+                "ecs:DeregisterTaskDefinition",
+                "ecs:DescribeTaskDefinition"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:DeleteLogGroup",
+                "logs:DeleteLogStream",
+                "logs:CreateLogStream",
+                "logs:PutRetentionPolicy",
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:GetLogEvents",
+                "logs:PutMetricFilter",
+                "logs:DeleteMetricFilter",
+                "logs:DescribeMetricFilters"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "cloudwatch:ListMetrics",
+                "cloudwatch:GetMetricStatistics",
+                "cloudwatch:Describe*",
+                "cloudwatch:PutMetricData",
+                "cloudwatch:PutMetricAlarm",
+                "cloudwatch:GetDashboard",
+                "cloudwatch:DeleteDashboards",
+                "cloudwatch:DeleteAlarms",
+                "cloudwatch:PutDashboard",
+                "cloudwatch:ListDashboards"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "iam:CreateInstanceProfile",
+                "iam:CreateRole",
+                "iam:PutRolePolicy",
+                "iam:PassRole",
+                "iam:AttachRolePolicy",
+                "iam:AddRoleToInstanceProfile",
+                "iam:RemoveRoleFromInstanceProfile",
+                "iam:DeleteInstanceProfile",
+                "iam:GetRole",
+                "iam:GetPolicy",
+                "iam:GetRolePolicy",
+                "iam:ListRoles",
+                "iam:ListPolicies",
+                "iam:ListRolePolicies",
+                "iam:DeleteRole",
+                "iam:DeleteRolePolicy",
+                "iam:DetachRolePolicy"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":instance-profile/DTH*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":role/DTH*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":policy/DTH*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "lambda:InvokeFunction",
+                "lambda:AddPermission",
+                "lambda:CreateFunction",
+                "lambda:CreateEventSourceMapping",
+                "lambda:DeleteEventSourceMapping",
+                "lambda:PublishLayerVersion",
+                "lambda:DeleteLayerVersion",
+                "lambda:DeleteFunction",
+                "lambda:RemovePermission",
+                "lambda:UpdateFunctionConfiguration",
+                "lambda:UpdateFunctionCode",
+                "lambda:PublishVersion",
+                "lambda:Get*",
+                "lambda:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:CreateKey",
+                "kms:CreateAlias",
+                "kms:CreateGrant",
+                "kms:DeleteAlias",
+                "kms:DescribeKey",
+                "kms:DisableKey",
+                "kms:EnableKey",
+                "kms:EnableKeyRotation",
+                "kms:GetKeyRotationStatus",
+                "kms:GetKeyPolicy",
+                "kms:GetParametersForImport",
+                "kms:ImportKeyMaterial",
+                "kms:PutKeyPolicy",
+                "kms:TagResource",
+                "kms:UntagResource",
+                "kms:UpdateAlias"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "ecr:CreateRepository",
+                "ecr:CompleteLayerUpload",
+                "ecr:UploadLayerPart",
+                "ecr:InitiateLayerUpload",
+                "ecr:PutImage",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "ecr:GetAuthorizationToken"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "iam:CreateServiceLinkedRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":iam::",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "APICfnWorkflowTaskFnPolicy9138F2E2",
+        "Roles": [
+          {
+            "Ref": "APICfnWorkflowCreateTaskCfnFnServiceRole3938A461"
+          },
+          {
+            "Ref": "APICfnWorkflowStopTaskCfnFnServiceRoleCB7981E0"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/CfnWorkflow/TaskFnPolicy/Resource",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "F4",
+              "reason": "This policy requires releted actions in order to start/delete other cloudformation stacks of the plugin with many other services"
+            },
+            {
+              "id": "F39",
+              "reason": "This policy requires releted PassRole actions to unknown resources created by plugin cloudformation stacks"
+            },
+            {
+              "id": "W76",
+              "reason": "This policy needs to be able to start/delete other complex cloudformation stacks"
+            },
+            {
+              "id": "W12",
+              "reason": "This policy needs to be able to start/delete other cloudformation stacks of the plugin with unknown resources names"
+            }
+          ]
+        }
+      }
+    },
+    "APICfnWorkflowQueryTaskCfnFnServiceRoleD084A22B": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/CfnWorkflow/QueryTaskCfnFn/ServiceRole/Resource"
+      }
+    },
+    "APICfnWorkflowQueryTaskCfnFnServiceRoleDefaultPolicyB540C3AD": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:Query",
+                "dynamodb:UpdateItem"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "APITaskTable658DE9FE",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "cloudformation:DescribeStacks",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":stack/DTH*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "APICfnWorkflowQueryTaskCfnFnServiceRoleDefaultPolicyB540C3AD",
+        "Roles": [
+          {
+            "Ref": "APICfnWorkflowQueryTaskCfnFnServiceRoleD084A22B"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/CfnWorkflow/QueryTaskCfnFn/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "APICfnWorkflowQueryTaskCfnFn2D7564D5": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+          },
+          "S3Key": "data-transfer-hub/v2.1.3/9396cca309f43abd072db00ed3edd4f0df5b7988e939c35ced9bbfa19e02a595.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "APICfnWorkflowQueryTaskCfnFnServiceRoleD084A22B",
+            "Arn"
+          ]
+        },
+        "Description": "Data Transfer Hub - Query Task",
+        "Environment": {
+          "Variables": {
+            "TASK_TABLE": {
+              "Ref": "APITaskTable658DE9FE"
+            }
+          }
+        },
+        "Handler": "cdk/cfn-task.queryTaskCfn",
+        "Layers": [
+          {
+            "Ref": "APILayerED87B2AA"
+          }
+        ],
+        "MemorySize": 512,
+        "Runtime": "nodejs14.x",
+        "Timeout": 60
+      },
+      "DependsOn": [
+        "APICfnWorkflowQueryTaskCfnFnServiceRoleDefaultPolicyB540C3AD",
+        "APICfnWorkflowQueryTaskCfnFnServiceRoleD084A22B"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/CfnWorkflow/QueryTaskCfnFn/Resource",
+        "aws:asset:path": "asset.9396cca309f43abd072db00ed3edd4f0df5b7988e939c35ced9bbfa19e02a595",
+        "aws:asset:property": "Code",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W58",
+              "reason": "Lambda function already has permission to write CloudWatch Logs"
+            }
+          ]
+        }
+      }
+    },
+    "APICfnWorkflowCfnDeploymentStateMachineRole94AFCD72": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/CfnWorkflow/CfnDeploymentStateMachine/Role/Resource"
+      }
+    },
+    "APICfnWorkflowCfnDeploymentStateMachineRoleDefaultPolicyF7DE5FEB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "APICfnWorkflowCreateTaskCfnFnACF26E17",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "APICfnWorkflowStopTaskCfnFn512164BE",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "APICfnWorkflowQueryTaskCfnFn2D7564D5",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "APICfnWorkflowCfnDeploymentStateMachineRoleDefaultPolicyF7DE5FEB",
+        "Roles": [
+          {
+            "Ref": "APICfnWorkflowCfnDeploymentStateMachineRole94AFCD72"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/CfnWorkflow/CfnDeploymentStateMachine/Role/DefaultPolicy/Resource"
+      }
+    },
+    "APICfnWorkflowCfnDeploymentStateMachineFC154A5B": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "APICfnWorkflowCfnDeploymentStateMachineRole94AFCD72",
+            "Arn"
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"Stack Action Choice\",\"States\":{\"Stack Action Choice\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.action\",\"StringEquals\":\"START\",\"Next\":\"Start Stack\"},{\"Variable\":\"$.action\",\"StringEquals\":\"STOP\",\"Next\":\"Stop Stack\"}]},\"Start Stack\":{\"Next\":\"Wait for 5 seconds\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+              {
+                "Fn::GetAtt": [
+                  "APICfnWorkflowCreateTaskCfnFnACF26E17",
+                  "Arn"
+                ]
+              },
+              "\",\"Payload.$\":\"$\"}},\"Wait for 5 seconds\":{\"Type\":\"Wait\",\"Seconds\":5,\"Next\":\"Query Stack Status\"},\"Stop Stack\":{\"Next\":\"Wait for 5 seconds\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+              {
+                "Fn::GetAtt": [
+                  "APICfnWorkflowStopTaskCfnFn512164BE",
+                  "Arn"
+                ]
+              },
+              "\",\"Payload.$\":\"$\"}},\"Query Stack Status\":{\"Next\":\"Query Stack Status Choice\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+              {
+                "Fn::GetAtt": [
+                  "APICfnWorkflowQueryTaskCfnFn2D7564D5",
+                  "Arn"
+                ]
+              },
+              "\",\"Payload.$\":\"$\"}},\"Query Stack Status Choice\":{\"Type\":\"Choice\",\"Choices\":[{\"Or\":[{\"Variable\":\"$.stackStatus\",\"StringEquals\":\"CREATE_COMPLETE\"},{\"Variable\":\"$.stackStatus\",\"StringEquals\":\"UPDATE_COMPLETE\"},{\"Variable\":\"$.stackStatus\",\"StringEquals\":\"DELETE_COMPLETE\"}],\"Next\":\"Stack Ops Succeed\"},{\"Or\":[{\"Variable\":\"$.stackStatus\",\"StringEquals\":\"CREATE_FAILED\"},{\"Variable\":\"$.stackStatus\",\"StringEquals\":\"DELETE_FAILED\"},{\"Variable\":\"$.stackStatus\",\"StringEquals\":\"UPDATE_ROLLBACK_FAILED\"}],\"Next\":\"Stack Ops Failed\"}],\"Default\":\"Wait for 5 seconds\"},\"Stack Ops Succeed\":{\"Type\":\"Succeed\"},\"Stack Ops Failed\":{\"Type\":\"Fail\"}},\"TimeoutSeconds\":7200}"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "APICfnWorkflowCfnDeploymentStateMachineRoleDefaultPolicyF7DE5FEB",
+        "APICfnWorkflowCfnDeploymentStateMachineRole94AFCD72"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/CfnWorkflow/CfnDeploymentStateMachine/Resource"
+      }
+    },
+    "APIApiLogRoleBA526E47": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiLogRole/Resource"
+      }
+    },
+    "APIApiLogPolicy50D2F23A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "APIApiLogPolicy50D2F23A",
+        "Roles": [
+          {
+            "Ref": "APIApiLogRoleBA526E47"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiLogPolicy/Resource",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W12",
+              "reason": "The managed policy AWSAppSyncPushToCloudWatchLogs needs to use any resources"
+            }
+          ]
+        }
+      }
+    },
+    "APIApiEndpointFA568421": {
+      "Type": "AWS::AppSync::GraphQLApi",
+      "Properties": {
+        "AuthenticationType": "OPENID_CONNECT",
+        "Name": "DataTransferHubAPI",
+        "AdditionalAuthenticationProviders": [
+          {
+            "AuthenticationType": "AWS_IAM"
+          }
+        ],
+        "LogConfig": {
+          "CloudWatchLogsRoleArn": {
+            "Fn::GetAtt": [
+              "APIApiLogRoleBA526E47",
+              "Arn"
+            ]
+          },
+          "FieldLogLevel": "ERROR"
+        },
+        "OpenIDConnectConfig": {
+          "Issuer": {
+            "Ref": "OidcProvider"
+          }
+        },
+        "XrayEnabled": true
+      },
+      "DependsOn": [
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/Resource"
+      }
+    },
+    "APIApiEndpointSchema418A4119": {
+      "Type": "AWS::AppSync::GraphQLSchema",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "APIApiEndpointFA568421",
+            "ApiId"
+          ]
+        },
+        "Definition": "scalar AWSDateTime\ndirective @aws_iam on FIELD_DEFINITION | OBJECT\ndirective @aws_cognito_user_pools on FIELD_DEFINITION | OBJECT\ndirective @aws_oidc on FIELD_DEFINITION | OBJECT\ndirective @aws_subscribe on FIELD_DEFINITION\n\nschema {\n    query: Query\n    mutation: Mutation\n}\n\n\ntype Query {\n    \"\"\"\n    Get a task list.\n\n    Arguments\n    limit: The max number of items to return. Default 20.\n    nextToken: Pagination token. Optional.\n    \"\"\"\n    listTasks(limit: Int = 20, nextToken: String): ListTasksResponse\n\n    \"\"\"\n    Get a task object by ID.\n    \"\"\"\n    getTask(id: ID!): Task\n\n    \"\"\"\n    Get the list of Secrets names from Secret Manager\n    \"\"\"\n    listSecrets: [Secret]\n}\n\ntype Mutation {\n    \"\"\"\n    Start a transfer task. \n    This is to start a cloudformation deployment of plugins\n\n    Arguments\n    input: parameters value set to start a transfer task.\n    \"\"\"\n    createTask(input: CreateTaskInput!): Task @aws_iam @aws_cognito_user_pools @aws_oidc\n\n    \"\"\"\n    Stop a transfer task.\n    This is to delete a cloudformation deployment of plugins\n\n    Arguments\n    id: A unique ID of the task\n    \"\"\"\n    stopTask(id: String): Task @aws_iam @aws_cognito_user_pools @aws_oidc\n}\n\n\n\n\"\"\"\nSecret in Secrets Manager\n\"\"\"\ntype Secret @aws_iam @aws_cognito_user_pools @aws_oidc{\n    \"Secret Name.\"\n    name: String!\n\n    \"Secret Description\"\n    description: String\n\n}\n\n\"\"\"\nTask. A Data Transfer Hub task.\n\"\"\"\ntype Task @aws_iam @aws_cognito_user_pools @aws_oidc{\n    \"ID. Auto-generated.\"\n    id: ID!\n\n    \"Explanatory description of the task.\"\n    description: String\n\n    \"Task type\"\n    type: TaskType\n\n    \"The CloudFormation template url.\"\n    templateUrl: String\n\n    \"CloudFormation template parameters.\"\n    parameters: [ TaskParameter ]\n\n    \"Task creation time.\"\n    createdAt: AWSDateTime\n\n    \"Task stop time.\"\n    stoppedAt: AWSDateTime\n\n    \"Task progress indicator.\"\n    progress: TaskProgress\n\n    \"Task progress information.  Not used for now\"\n    progressInfo: CommonProgressInfo\n\n    \"CloudFormation Stack ID\"\n    stackId: String\n\n    \"CloudFormation Stack status\"\n    stackStatus: String\n\n    \"CloudFormation Stack status reason. Normally holds error message.\"\n    stackStatusReason: String\n\n    \"StepFunctions execution ARN.\"\n    executionArn: String\n}\n\n\"\"\"\nThe set of task types supported by Data Transfer Hub.\n\"\"\"\nenum TaskType {\n    S3EC2\n    ECR\n}\n\n\"\"\"\nTask progress indicator.\n\"\"\"\nenum TaskProgress {\n    \"The task has been started. The underlying infrastructure is provisioning.\"\n    STARTING\n\n    \"The task is stopping. The underlying infrastructure is being destroyed.\"\n    STOPPING\n\n    \"Error occurs.\"\n    ERROR\n\n    \"Task in progress.\"\n    IN_PROGRESS\n\n    \"Done. This is used for one-time replication task ONLY.\"\n    DONE\n\n    \"Task stopped. The underlying infrastructure has been destroyed.\"\n    STOPPED\n}\n\ntype CommonProgressInfo @aws_iam @aws_cognito_user_pools @aws_oidc{\n    \"Total number of records. In S3 task, it is the total number of objects.\"\n    total: Int\n\n    \"Number of records being replicated.\"\n    replicated: Int\n}\n\n\ntype TaskParameter {\n    ParameterKey: String\n    ParameterValue: String\n}\n\ntype ListTasksResponse {\n    items: [Task],\n    nextToken: String\n}\n\ninput TaskParameterInput {\n    ParameterKey: String\n    ParameterValue: String\n}\n\ninput CreateTaskInput {\n    type: TaskType!\n    description: String\n    parameters: [ TaskParameterInput ]\n}\n"
+      },
+      "DependsOn": [
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/Schema"
+      }
+    },
+    "APIApiEndpointTaskTableDSServiceRole098F32A5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "DependsOn": [
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/TaskTableDS/ServiceRole/Resource"
+      }
+    },
+    "APIApiEndpointTaskTableDSServiceRoleDefaultPolicyFE42434B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "APITaskTable658DE9FE",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "APITaskTable658DE9FE",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "APIApiEndpointTaskTableDSServiceRoleDefaultPolicyFE42434B",
+        "Roles": [
+          {
+            "Ref": "APIApiEndpointTaskTableDSServiceRole098F32A5"
+          }
+        ]
+      },
+      "DependsOn": [
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/TaskTableDS/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "APIApiEndpointTaskTableDSC9807634": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "APIApiEndpointFA568421",
+            "ApiId"
+          ]
+        },
+        "Name": "TaskTableDS",
+        "Type": "AMAZON_DYNAMODB",
+        "DynamoDBConfig": {
+          "AwsRegion": {
+            "Ref": "AWS::Region"
+          },
+          "TableName": {
+            "Ref": "APITaskTable658DE9FE"
+          }
+        },
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "APIApiEndpointTaskTableDSServiceRole098F32A5",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/TaskTableDS/Resource"
+      }
+    },
+    "APIApiEndpointTaskTableDSQuerylistTasksResolverFDD9E6EC": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "APIApiEndpointFA568421",
+            "ApiId"
+          ]
+        },
+        "FieldName": "listTasks",
+        "TypeName": "Query",
+        "DataSourceName": "TaskTableDS",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"Scan\"\n    #if( ${context.arguments.limit} )\n        ,\"limit\": $util.toJson($context.arguments.limit)\n    #end\n    #if( ${context.arguments.nextToken} )\n        ,\"nextToken\": $util.toJson($context.arguments.nextToken)\n    #end\n}",
+        "ResponseMappingTemplate": "{\n    #foreach($item in $context.result.items)\n        #set($item.description = $util.urlEncode($item.description))\n        #foreach( $param in $item.parameters )\n            #if( $param.ParameterKey == \"srcPrefix\" || $param.ParameterKey == \"destPrefix\" )\n                #set($param.ParameterValue = $util.urlEncode($param.ParameterValue))\n            #end\n        #end\n    #end\n    \"items\": $utils.toJson($context.result.items)\n    #if( ${context.result.nextToken} )\n        ,\"nextToken\": $util.toJson($context.result.nextToken)\n    #end\n}"
+      },
+      "DependsOn": [
+        "APIApiEndpointSchema418A4119",
+        "APIApiEndpointTaskTableDSC9807634",
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/TaskTableDS/QuerylistTasksResolver/Resource"
+      }
+    },
+    "APIApiEndpointTaskTableDSQuerygetTaskResolverC2D8AA5C": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "APIApiEndpointFA568421",
+            "ApiId"
+          ]
+        },
+        "FieldName": "getTask",
+        "TypeName": "Query",
+        "DataSourceName": "TaskTableDS",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
+        "ResponseMappingTemplate": "#set($ctx.result.description = $util.urlEncode($ctx.result.description))\n\n#foreach( $param in $ctx.result.parameters )\n    #if( $param.ParameterKey == \"srcPrefix\" || $param.ParameterKey == \"destPrefix\" )\n    \t#set($param.ParameterValue = $util.urlEncode($param.ParameterValue))\n    #end\n#end\n\n$util.toJson($ctx.result)"
+      },
+      "DependsOn": [
+        "APIApiEndpointSchema418A4119",
+        "APIApiEndpointTaskTableDSC9807634",
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/TaskTableDS/QuerygetTaskResolver/Resource"
+      }
+    },
+    "APIApiEndpointTaskLambdaDSServiceRoleD0376FBD": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "DependsOn": [
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/TaskLambdaDS/ServiceRole/Resource"
+      }
+    },
+    "APIApiEndpointTaskLambdaDSServiceRoleDefaultPolicyD2109D35": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "APITaskHandlerFnE5AB3CEB",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "APIApiEndpointTaskLambdaDSServiceRoleDefaultPolicyD2109D35",
+        "Roles": [
+          {
+            "Ref": "APIApiEndpointTaskLambdaDSServiceRoleD0376FBD"
+          }
+        ]
+      },
+      "DependsOn": [
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/TaskLambdaDS/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "APIApiEndpointTaskLambdaDS97C95368": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "APIApiEndpointFA568421",
+            "ApiId"
+          ]
+        },
+        "Name": "TaskLambdaDS",
+        "Type": "AWS_LAMBDA",
+        "Description": "Lambda Resolver Datasource",
+        "LambdaConfig": {
+          "LambdaFunctionArn": {
+            "Fn::GetAtt": [
+              "APITaskHandlerFnE5AB3CEB",
+              "Arn"
+            ]
+          }
+        },
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "APIApiEndpointTaskLambdaDSServiceRoleD0376FBD",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/TaskLambdaDS/Resource"
+      }
+    },
+    "APIApiEndpointTaskLambdaDSMutationcreateTaskResolver9E501B18": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "APIApiEndpointFA568421",
+            "ApiId"
+          ]
+        },
+        "FieldName": "createTask",
+        "TypeName": "Mutation",
+        "DataSourceName": "TaskLambdaDS",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "#set($ctx.args.input.description = $util.urlDecode($ctx.args.input.description))\n#if( $ctx.args.input.description.length() > 250)\n    $util.error(\"Value for description field cannot exceed 250 characters.\")\n#end\n\n#foreach( $param in $ctx.args.input.parameters )\n    #if( $param.ParameterKey == \"srcBucket\" || $param.ParameterKey == \"destBucket\" )\n        $util.validate($util.matches(\"^(?!(^((\\d{1,3}[.]){3}\\d{1,3}$)|.*\\.\\.|.*\\.-|.*-\\.|.*\\._|.*_\\.))[a-z\\d][\\w.-]{1,253}[a-z\\d]$\", $param.ParameterValue), \"Invalid Bucket Name\")\n    #elseif( $param.ParameterKey == \"srcPrefix\" || $param.ParameterKey == \"destPrefix\" )\n    \t#set($param.ParameterValue = $util.urlDecode($param.ParameterValue))\n        $util.validate($util.matches(\"^.{0,1024}$\", $param.ParameterValue), \"Invalid Prefix\")\n    #elseif( $param.ParameterKey == \"srcAccountId\" || $param.ParameterKey == \"destAccountId\" )\n        $util.validate($util.matches(\"^\\d{12}$\", $util.defaultIfNullOrEmpty($param.ParameterValue, '123456789012')), \"Invalid Account ID\")\n    #elseif( $param.ParameterKey == \"srcCredential\" || $param.ParameterKey == \"destCredential\" )\n        $util.validate($util.matches(\"^[\\w/+=.@-]{0,1024}$\", $param.ParameterValue), \"Invalid Credential\")\n\t#elseif ($param.ParameterKey == \"srcRegion\" || $param.ParameterKey == \"destRegion\" )\n    \t$util.validate($util.matches(\"^(?!(.*--))(?!(.*-$))[a-z0-9]([a-z0-9-]){0,62}$\", $util.defaultIfNullOrEmpty($param.ParameterValue,'us-west-2')), \"Invalid Region Name\")\n    #elseif ($param.ParameterKey == \"ecsClusterName\" )\n    \t$util.validate($util.matches(\"[a-zA-Z0-9-]{1,1024}\", $param.ParameterValue), \"Invalid ECS Cluster Name\")\n    #end\n#end\n\n{\"version\": \"2017-02-28\", \"operation\": \"Invoke\", \"payload\": $util.toJson($ctx)}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+      },
+      "DependsOn": [
+        "APIApiEndpointSchema418A4119",
+        "APIApiEndpointTaskLambdaDS97C95368",
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/TaskLambdaDS/MutationcreateTaskResolver/Resource"
+      }
+    },
+    "APIApiEndpointTaskLambdaDSMutationstopTaskResolverB9F1A09A": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "APIApiEndpointFA568421",
+            "ApiId"
+          ]
+        },
+        "FieldName": "stopTask",
+        "TypeName": "Mutation",
+        "DataSourceName": "TaskLambdaDS",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"Invoke\", \"payload\": $util.toJson($ctx)}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+      },
+      "DependsOn": [
+        "APIApiEndpointSchema418A4119",
+        "APIApiEndpointTaskLambdaDS97C95368",
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/TaskLambdaDS/MutationstopTaskResolver/Resource"
+      }
+    },
+    "APIApiEndpointsecretManagerLambdaDSServiceRoleE994A823": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "appsync.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "DependsOn": [
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/secretManagerLambdaDS/ServiceRole/Resource"
+      }
+    },
+    "APIApiEndpointsecretManagerLambdaDSServiceRoleDefaultPolicy01745813": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "APISecretManagerHandlerFnDECAB7F6",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "APIApiEndpointsecretManagerLambdaDSServiceRoleDefaultPolicy01745813",
+        "Roles": [
+          {
+            "Ref": "APIApiEndpointsecretManagerLambdaDSServiceRoleE994A823"
+          }
+        ]
+      },
+      "DependsOn": [
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/secretManagerLambdaDS/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "APIApiEndpointsecretManagerLambdaDSF5336B34": {
+      "Type": "AWS::AppSync::DataSource",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "APIApiEndpointFA568421",
+            "ApiId"
+          ]
+        },
+        "Name": "secretManagerLambdaDS",
+        "Type": "AWS_LAMBDA",
+        "Description": "Lambda Resolver Datasource for Secret Manager",
+        "LambdaConfig": {
+          "LambdaFunctionArn": {
+            "Fn::GetAtt": [
+              "APISecretManagerHandlerFnDECAB7F6",
+              "Arn"
+            ]
+          }
+        },
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "APIApiEndpointsecretManagerLambdaDSServiceRoleE994A823",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/secretManagerLambdaDS/Resource"
+      }
+    },
+    "APIApiEndpointsecretManagerLambdaDSQuerylistSecretsResolverA6CC4EE9": {
+      "Type": "AWS::AppSync::Resolver",
+      "Properties": {
+        "ApiId": {
+          "Fn::GetAtt": [
+            "APIApiEndpointFA568421",
+            "ApiId"
+          ]
+        },
+        "FieldName": "listSecrets",
+        "TypeName": "Query",
+        "DataSourceName": "secretManagerLambdaDS",
+        "Kind": "UNIT",
+        "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"Invoke\", \"payload\": $util.toJson($ctx)}",
+        "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+      },
+      "DependsOn": [
+        "APIApiEndpointSchema418A4119",
+        "APIApiEndpointsecretManagerLambdaDSF5336B34",
+        "APIappSyncServiceLinkRoleFnTrigger535D3D40"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/ApiEndpoint/secretManagerLambdaDS/QuerylistSecretsResolver/Resource"
+      }
+    },
+    "APITaskHandlerFnServiceRole2FFB622E": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/TaskHandlerFn/ServiceRole/Resource"
+      }
+    },
+    "APITaskHandlerFnServiceRoleDefaultPolicy96C1AD2F": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "APITaskTable658DE9FE",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "APITaskTable658DE9FE",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "states:StartExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "APICfnWorkflowCfnDeploymentStateMachineFC154A5B"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "APITaskHandlerFnServiceRoleDefaultPolicy96C1AD2F",
+        "Roles": [
+          {
+            "Ref": "APITaskHandlerFnServiceRole2FFB622E"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/TaskHandlerFn/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "APITaskHandlerFnE5AB3CEB": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+          },
+          "S3Key": "data-transfer-hub/v2.1.3/7f8e1888693b0ff2bab0ba93c4b78a96627d39dd958c30fde5eed1fd08a811e1.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "APITaskHandlerFnServiceRole2FFB622E",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "STATE_MACHINE_ARN": {
+              "Ref": "APICfnWorkflowCfnDeploymentStateMachineFC154A5B"
+            },
+            "TASK_TABLE": {
+              "Ref": "APITaskTable658DE9FE"
+            },
+            "PLUGIN_TEMPLATE_S3EC2": "https://aws-gcr-solutions.s3.amazonaws.com/data-transfer-hub-s3/v2.1.0/DataTransferS3Stack-ec2.template",
+            "PLUGIN_TEMPLATE_ECR": "https://aws-gcr-solutions.s3.amazonaws.com/data-transfer-hub-ecr/v1.0.3/DataTransferECRStack.template",
+            "DRY_RUN": "False"
+          }
+        },
+        "Handler": "api/api-task.handler",
+        "Layers": [
+          {
+            "Ref": "APILayerED87B2AA"
+          }
+        ],
+        "MemorySize": 512,
+        "Runtime": "nodejs14.x",
+        "Timeout": 10
+      },
+      "DependsOn": [
+        "APITaskHandlerFnServiceRoleDefaultPolicy96C1AD2F",
+        "APITaskHandlerFnServiceRole2FFB622E"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/TaskHandlerFn/Resource",
+        "aws:asset:path": "asset.7f8e1888693b0ff2bab0ba93c4b78a96627d39dd958c30fde5eed1fd08a811e1",
+        "aws:asset:property": "Code",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W58",
+              "reason": "Lambda function already has permission to write CloudWatch Logs"
+            }
+          ]
+        }
+      }
+    },
+    "APISecretManagerHandlerFnServiceRole4E7690CB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/SecretManagerHandlerFn/ServiceRole/Resource"
+      }
+    },
+    "APISecretManagerHandlerFnDECAB7F6": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+          },
+          "S3Key": "data-transfer-hub/v2.1.3/7f8e1888693b0ff2bab0ba93c4b78a96627d39dd958c30fde5eed1fd08a811e1.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "APISecretManagerHandlerFnServiceRole4E7690CB",
+            "Arn"
+          ]
+        },
+        "Handler": "api/api-sm-param.lambda_handler",
+        "MemorySize": 128,
+        "Runtime": "python3.9",
+        "Timeout": 60
+      },
+      "DependsOn": [
+        "APISecretManagerHandlerFnServiceRole4E7690CB"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/SecretManagerHandlerFn/Resource",
+        "aws:asset:path": "asset.7f8e1888693b0ff2bab0ba93c4b78a96627d39dd958c30fde5eed1fd08a811e1",
+        "aws:asset:property": "Code",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W58",
+              "reason": "Lambda function already has permission to write CloudWatch Logs"
+            }
+          ]
+        }
+      }
+    },
+    "APIsecretManagerReadOnlyPolicyC8A33065": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "secretsmanager:ListSecrets",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "APIsecretManagerReadOnlyPolicyC8A33065",
+        "Roles": [
+          {
+            "Ref": "APISecretManagerHandlerFnServiceRole4E7690CB"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/API/secretManagerReadOnlyPolicy/Resource",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W12",
+              "reason": "Need to be able to list all secrets in Secrets Manager"
+            }
+          ]
+        }
+      }
+    },
+    "PortalWebS3LoggingBucket0955B8B2": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite",
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/Web/S3LoggingBucket/Resource",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W35",
+              "reason": "This S3 bucket is used as the access logging bucket for another bucket"
+            }
+          ]
+        }
+      }
+    },
+    "PortalWebS3LoggingBucketPolicyFA081916": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "PortalWebS3LoggingBucket0955B8B2"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PortalWebS3LoggingBucket0955B8B2",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PortalWebS3LoggingBucket0955B8B2",
+                    "Arn"
+                  ]
+                }
+              ],
+              "Sid": "HttpsOnly"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/Web/S3LoggingBucket/Policy/Resource"
+      }
+    },
+    "PortalWebS3Bucket93628CD2": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "AccessControl": "Private",
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "NoncurrentVersionTransitions": [
+                {
+                  "StorageClass": "GLACIER",
+                  "TransitionInDays": 90
+                }
+              ],
+              "Status": "Enabled"
+            }
+          ]
+        },
+        "LoggingConfiguration": {
+          "DestinationBucketName": {
+            "Ref": "PortalWebS3LoggingBucket0955B8B2"
+          }
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/Web/S3Bucket/Resource"
+      }
+    },
+    "PortalWebS3BucketPolicy9555B982": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "PortalWebS3Bucket93628CD2"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PortalWebS3Bucket93628CD2",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PortalWebS3Bucket93628CD2",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PortalWebS3Bucket93628CD2",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PortalWebS3Bucket93628CD2",
+                    "Arn"
+                  ]
+                }
+              ],
+              "Sid": "HttpsOnly"
+            },
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Principal": {
+                "CanonicalUser": {
+                  "Fn::GetAtt": [
+                    "PortalWebCloudFrontDistributionOrigin1S3Origin8C13B5F0",
+                    "S3CanonicalUserId"
+                  ]
+                }
+              },
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "PortalWebS3Bucket93628CD2",
+                        "Arn"
+                      ]
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/Web/S3Bucket/Policy/Resource",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "F16",
+              "reason": "Public website bucket policy requires a wildcard principal"
+            }
+          ]
+        }
+      }
+    },
+    "PortalWebCloudfrontLoggingBucket6561051E": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite",
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/Web/CloudfrontLoggingBucket/Resource",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W35",
+              "reason": "This S3 bucket is used as the access logging bucket for CloudFront Distribution"
+            }
+          ]
+        }
+      }
+    },
+    "PortalWebCloudfrontLoggingBucketPolicy07A1704A": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "PortalWebCloudfrontLoggingBucket6561051E"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PortalWebCloudfrontLoggingBucket6561051E",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::GetAtt": [
+                    "PortalWebCloudfrontLoggingBucket6561051E",
+                    "Arn"
+                  ]
+                }
+              ],
+              "Sid": "HttpsOnly"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/Web/CloudfrontLoggingBucket/Policy/Resource"
+      }
+    },
+    "PortalWebCloudFrontDistributionOrigin1S3Origin8C13B5F0": {
+      "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+      "Properties": {
+        "CloudFrontOriginAccessIdentityConfig": {
+          "Comment": "Identity for DataTransferHubPortalWebCloudFrontDistributionOrigin1834F34D1"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/Web/CloudFrontDistribution/Origin1/S3Origin/Resource"
+      }
+    },
+    "PortalWebCloudFrontDistribution3C837830": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "Comment": "Data Transfer Hub Portal Distribution",
+          "CustomErrorResponses": [
+            {
+              "ErrorCode": 403,
+              "ResponseCode": 200,
+              "ResponsePagePath": "/index.html"
+            }
+          ],
+          "DefaultCacheBehavior": {
+            "Compress": true,
+            "ForwardedValues": {
+              "Cookies": {
+                "Forward": "none"
+              },
+              "QueryString": false
+            },
+            "TargetOriginId": "DataTransferHubPortalWebCloudFrontDistributionOrigin1834F34D1",
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "DefaultRootObject": "index.html",
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": false,
+          "Logging": {
+            "Bucket": {
+              "Fn::GetAtt": [
+                "PortalWebCloudfrontLoggingBucket6561051E",
+                "RegionalDomainName"
+              ]
+            }
+          },
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "PortalWebS3Bucket93628CD2",
+                  "RegionalDomainName"
+                ]
+              },
+              "Id": "DataTransferHubPortalWebCloudFrontDistributionOrigin1834F34D1",
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "origin-access-identity/cloudfront/",
+                      {
+                        "Ref": "PortalWebCloudFrontDistributionOrigin1S3Origin8C13B5F0"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "PriceClass": "PriceClass_All"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/Web/CloudFrontDistribution/Resource",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W70",
+              "reason": "Since the distribution uses the CloudFront domain name, CloudFront automatically sets the security policy to TLSv1 regardless of the value of MinimumProtocolVersion"
+            }
+          ]
+        }
+      }
+    },
+    "CustomResourceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Path": "/"
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/CustomResourceRole/Resource"
+      }
+    },
+    "CustomResourcePolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:CreateLogGroup",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":logs:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":log-group:/aws/lambda/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:ListBucket"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":s3:::*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "AWS::StackName"
+              },
+              "CustomResourcePolicy"
+            ]
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "CustomResourceRole"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/CustomResourcePolicy/Resource"
+      }
+    },
+    "PortalCustomHandler77BD3212": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+          },
+          "S3Key": "data-transfer-hub/v2.1.3/e3d4f376b78259dc8c05ef37c5346f58910de8046c70670ec5ec08165d0c6647.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomResourceRole",
+            "Arn"
+          ]
+        },
+        "Description": "Data Transfer Hub - Custom resource",
+        "Handler": "index.handler",
+        "MemorySize": 512,
+        "Runtime": "nodejs14.x",
+        "Timeout": 30
+      },
+      "DependsOn": [
+        "CustomResourceRole"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/CustomHandler/Resource",
+        "aws:asset:path": "asset.e3d4f376b78259dc8c05ef37c5346f58910de8046c70670ec5ec08165d0c6647",
+        "aws:asset:property": "Code",
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W58",
+              "reason": "Lambda function already has permission to write CloudWatch Logs"
+            }
+          ]
+        }
+      }
+    },
+    "PortalDeployWebsiteAwsCliLayer82C5B798": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": {
+            "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+          },
+          "S3Key": "data-transfer-hub/v2.1.3/e9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68.zip"
+        },
+        "Description": "/opt/awscli/aws"
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/DeployWebsite/AwsCliLayer/Resource",
+        "aws:asset:path": "asset.e9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68.zip",
+        "aws:asset:property": "Content"
+      }
+    },
+    "PortalDeployWebsiteCustomResource0C413B06": {
+      "Type": "Custom::CDKBucketDeployment",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+            "Arn"
+          ]
+        },
+        "SourceBucketNames": [
+          {
+            "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+          }
+        ],
+        "SourceObjectKeys": [
+          "data-transfer-hub/v2.1.3/be6d2da421ac47cdd2c580ad875bb7aaa7df81cb260e4f3d647b1accc1d57f63.zip"
+        ],
+        "DestinationBucketName": {
+          "Ref": "PortalWebS3Bucket93628CD2"
+        },
+        "Prune": false
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete",
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/DeployWebsite/CustomResource/Default"
+      }
+    },
+    "PortalCustomResourceConfigCB1FAEDC": {
+      "Type": "Custom::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "PortalCustomHandler77BD3212",
+            "Arn"
+          ]
+        },
+        "Region": {
+          "Ref": "AWS::Region"
+        },
+        "configItem": {
+          "aws_project_region": {
+            "Ref": "AWS::Region"
+          },
+          "aws_cognito_region": {
+            "Ref": "AWS::Region"
+          },
+          "aws_cloudfront_url": {
+            "Fn::GetAtt": [
+              "PortalWebCloudFrontDistribution3C837830",
+              "DomainName"
+            ]
+          },
+          "aws_user_pools_id": "",
+          "aws_user_pools_web_client_id": "",
+          "aws_oidc_customer_domain": {
+            "Ref": "OidcCustomerDomain"
+          },
+          "aws_oidc_provider": {
+            "Ref": "OidcProvider"
+          },
+          "aws_oidc_client_id": {
+            "Ref": "OidcClientId"
+          },
+          "aws_appsync_graphqlEndpoint": {
+            "Fn::GetAtt": [
+              "APIApiEndpointFA568421",
+              "GraphQLUrl"
+            ]
+          },
+          "aws_appsync_region": {
+            "Ref": "AWS::Region"
+          },
+          "aws_appsync_authenticationType": "OPENID_CONNECT",
+          "taskCluster": {
+            "ecsVpcId": {
+              "Ref": "TaskClusterTaskVPCE5385B4D"
+            },
+            "ecsSubnets": [
+              {
+                "Ref": "TaskClusterTaskVPCpublicSubnet1SubnetB3F44AEF"
+              },
+              {
+                "Ref": "TaskClusterTaskVPCpublicSubnet2Subnet9FB6145A"
+              }
+            ],
+            "ecsClusterName": {
+              "Ref": "TaskCluster"
+            }
+          }
+        },
+        "destS3Bucket": {
+          "Ref": "PortalWebS3Bucket93628CD2"
+        },
+        "destS3key": "aws-exports.json",
+        "customAction": "putConfigFile"
+      },
+      "DependsOn": [
+        "CustomResourcePolicy",
+        "CustomResourceRole"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Portal/CustomResourceConfig"
+      }
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource"
+      }
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PortalWebS3Bucket93628CD2",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PortalWebS3Bucket93628CD2",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+        "Roles": [
+          {
+            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource"
+      }
+    },
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "aws-gcr-solutions-${AWS::Region}"
+          },
+          "S3Key": "data-transfer-hub/v2.1.3/a3058ccb468d757ebb89df5363a1c20f5307c6911136f29d00e1a68c9b2aa7e8.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+            "Arn"
+          ]
+        },
+        "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "PortalDeployWebsiteAwsCliLayer82C5B798"
+          }
+        ],
+        "Runtime": "python3.6",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource",
+        "aws:asset:path": "asset.a3058ccb468d757ebb89df5363a1c20f5307c6911136f29d00e1a68c9b2aa7e8",
+        "aws:asset:property": "Code"
+      }
+    },
+    "CDKMetadata": {
+      "Type": "AWS::CDK::Metadata",
+      "Properties": {
+        "Analytics": "v2:deflate64:H4sIAAAAAAAA/3VU247aMBD9ln13TGHV97IgEBKrpWRFnx1nAC+OnfoCiqL8e8d2SECrPuWM53h85pYpnc5+0h8vv9jNZi0vL5OWawO0zR3jF7I4qh0zrAIHJhjvrK6FOpGFVtYZzx3Zg9XecCBza8HhrVP0e+t0Nfjw5iP+8K72LqDvPIxcCie06kiUBHxG20PNg++wW5CdL6TguS8UxAgj2mvv4JMVEsbz8QzlaS5YiDyQA9goTA2Za+bgxpr+md6aO6zCuQLlyErq21afgr+HHRGsou1epwfjd6dRXAySUEekPlnaIn1ttK+D5447AhxdC4k1SNXtIV5iVVEy2q684nfFA96yBswBjO0dT3aO1Zfg9EDviH3NWhaaY2nsESmhlroJWdE3zy/glsNBYNM2nb4xCyTB8EyP0mfM89HuSNkoVumyoO3QiAgwroP62GuymWP2Yuk2prlRV32BZwLOn+ccoCQrJiT5wwRqOGuBM4Ij5uAd2yJUavSDjTNT17ZRnLZrw+rzXzmvRSBF6/f22cr5GSpGllHzslgyx/JhDh+sMJ7ymlo04KR9ZHWES+3Lo9FY1nYpcD1E4WPDPozApZhjPtZuSqyycE1qN15YhQv/YzyG6fCFuC2Z6dfF0p3RV1GimjQwmQyjkOHecCno/GYXUsTpwPJr6VPp+X117SQs2Kg6w9aPkj51/toRpUugX3Zync7obIb/ipcvK0RmPEqsgO7T9x/swUFWRQQAAA=="
+      },
+      "Metadata": {
+        "aws:cdk:path": "DataTransferHub/CDKMetadata/Default"
+      },
+      "Condition": "CDKMetadataAvailable"
+    }
+  },
+  "Outputs": {
+    "APICfnWorkflowCfnDeploymentStateMachineArn08C07E97": {
+      "Description": "StateMachine Arn",
+      "Value": {
+        "Ref": "APICfnWorkflowCfnDeploymentStateMachineFC154A5B"
+      },
+      "Export": {
+        "Name": "StateMachineArn"
+      }
+    },
+    "TaskClusterVpc": {
+      "Description": "Task VPC ID",
+      "Value": {
+        "Ref": "TaskClusterTaskVPCE5385B4D"
+      },
+      "Export": {
+        "Name": "TaskVpcId"
+      }
+    },
+    "TaskClusterName": {
+      "Description": "Task Cluster Name",
+      "Value": {
+        "Ref": "TaskCluster"
+      },
+      "Export": {
+        "Name": "TaskClusterName"
+      }
+    },
+    "UserPoolId": {
+      "Description": "User Pool Id",
+      "Value": ""
+    },
+    "UserPoolApiClientId": {
+      "Description": "API Client Id",
+      "Value": ""
+    },
+    "UserPoolDomain": {
+      "Description": "User pool domain",
+      "Value": ""
+    },
+    "AdminUsername": {
+      "Description": "Admin username",
+      "Value": ""
+    },
+    "ApiEndpoint": {
+      "Value": {
+        "Fn::GetAtt": [
+          "APIApiEndpointFA568421",
+          "GraphQLUrl"
+        ]
+      }
+    },
+    "PortalUrl": {
+      "Value": {
+        "Fn::GetAtt": [
+          "PortalWebCloudFrontDistribution3C837830",
+          "DomainName"
+        ]
+      }
+    }
+  },
+  "Conditions": {
+    "CDKMetadataAvailable": {
+      "Fn::Or": [
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "af-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-northeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ap-southeast-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "ca-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "cn-northwest-1"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-central-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-north-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-2"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "eu-west-3"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "me-south-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "sa-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-east-2"
+              ]
+            }
+          ]
+        },
+        {
+          "Fn::Or": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-1"
+              ]
+            },
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "us-west-2"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "Rules": {}
+}
